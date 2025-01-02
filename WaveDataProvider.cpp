@@ -1,25 +1,24 @@
 #include "WaveDataProvider.h"
 
 WaveDataProvider::WaveDataProvider()
-    : m_dataProxy(std::make_shared<QSurfaceDataProxy>()),
-      m_dataCache(CACHE_SIZE)
+    : m_dataProxy(std::make_shared<QSurfaceDataProxy>())
 {
-    // start loading/generating wave data
-
-    auto *worker = new WaveDataWorker();
+    qDebug() << "Constructor of WaveDataProvider";
+    worker.startDataGeneration();
 }
 
 void WaveDataProvider::update()
 {
-    // switch cache
-    if (m_dataCache.isEmpty())
-        return;
-
-    m_data = m_dataCache.takeFirst();
-    m_dataProxy->resetArray(m_data);
+    qDebug() << "Updating data";
+    if (worker.dataAvailable()) {
+        std::unique_ptr<QSurfaceDataArray> surfaceData = worker.fetchData();
+        if (surfaceData) {
+            m_dataProxy->resetArray(*surfaceData); // Pass the data as needed
+        }
+    }
 }
 
-QSurfaceDataProxy *WaveDataProvider::dataProxy()
+QSurfaceDataProxy* WaveDataProvider::dataProxy()
 {
     return m_dataProxy.get();
 }

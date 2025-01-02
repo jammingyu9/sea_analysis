@@ -1,12 +1,12 @@
 #ifndef WAVEDATAPROVIDER_H
 #define WAVEDATAPROVIDER_H
 
+#include <QDebug>
 #include <QSurfaceDataProxy>
 #include <QObject>
 #include <QtQml>
 #include <QThread>
-
-constexpr int CACHE_SIZE = 5;
+#include "WaveDataWorker.h"
 
 class WaveDataProvider : public QObject
 {
@@ -24,9 +24,8 @@ private:
 
 private:
     std::shared_ptr<QSurfaceDataProxy> m_dataProxy;
-    QSurfaceDataArray m_data;
-    QList<QSurfaceDataArray> m_dataCache;
 
+    WaveDataWorker worker;
     QThread m_workerThread;
 };
 
