@@ -12,7 +12,7 @@ SeaSurfaceForm {
 
     Timer {
         id: updateTimer
-        interval: 100 // Update interval in milliseconds (e.g., 1 second)
+        interval: 25 // Update interval in milliseconds (e.g., 1 second)
         repeat: true   // Keep repeating the timer
         running: true  // Start the timer immediately
         onTriggered: {

@@ -8,22 +8,13 @@ Item {
 
     anchors.fill: parent
 
-    Gradient {
-        id: gradientId
-        GradientStop { position: 1.0; color: "blue" } // Qt Brand color; Lemon
-        GradientStop { position: 0.0; color: "dodgerblue" } // Qt Brand color; Moss
-    }
-
     Surface3D {
         id: seaSurfaceGraph
 
         anchors.fill: parent
 
         theme : GraphsTheme {
-            id: scatterTheme
-            colorStyle: GraphsTheme.ColorStyle.RangeGradient
-            //! [scatter theme]
-            baseGradients: [ gradientId ]
+            id: surfaceTheme
             colorScheme: Qt.Dark
             plotAreaBackgroundVisible: false
             labelsVisible: false
@@ -34,38 +25,41 @@ Item {
         environment: ExtendedSceneEnvironment {
             backgroundMode: ExtendedSceneEnvironment.Color
             tonemapMode: ExtendedSceneEnvironment.TonemapModeNone
-            clearColor: "dodgerblue"
             glowEnabled: true
             //! [scene environment]
-            glowStrength: 1.2
+            glowStrength: 0.8
             glowIntensity: 8
             glowBloom: 1
             glowUseBicubicUpscale: true
             glowLevel: ExtendedSceneEnvironment.GlowLevel.One
                        | ExtendedSceneEnvironment.GlowLevel.Two
                        | ExtendedSceneEnvironment.GlowLevel.Three
-                       | ExtendedSceneEnvironment.GlowLevel.Four
+                       //| ExtendedSceneEnvironment.GlowLevel.Four
         }
 
 
         axisX: Value3DAxis {
-            max: 50
+            max: 120
             min: 0
         }
 
         axisY: Value3DAxis {
-            max: 5
-            min: -5
+            max: 10
+            min: -10
         }
 
         axisZ: Value3DAxis {
-            max: 50
+            max: 120
             min: 0
         }
 
         Surface3DSeries {
             id: surfaceSeriesId
             itemLabelFormat: "@xLabel, @zLabel: @yLabel"
+
+            //flatShadingEnabled: false
+            drawMode: Surface3DSeries.DrawSurface
+            textureFile: "/Users/jammingyu/Workspace/sea_analysis/image/ocean_texture.jpg"
 
 
         }

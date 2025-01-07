@@ -22,6 +22,7 @@ qt_add_qml_module(appsea_analysis
         QML_FILES SeaSurfaceForm.ui.qml
     QML_FILES SeaSurface.qml
     SOURCES WaveDataWorker.h WaveDataWorker.cpp
+    RESOURCES image/ocean_texture.jpg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

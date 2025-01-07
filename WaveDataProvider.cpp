@@ -9,7 +9,6 @@ WaveDataProvider::WaveDataProvider()
 
 void WaveDataProvider::update()
 {
-    qDebug() << "Updating data";
     if (worker.dataAvailable()) {
         std::unique_ptr<QSurfaceDataArray> surfaceData = worker.fetchData();
         if (surfaceData) {

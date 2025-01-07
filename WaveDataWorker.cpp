@@ -48,8 +48,8 @@ std::unique_ptr<QSurfaceDataArray> WaveDataWorker::fetchData() {
 }
 
 void WaveDataWorker::generateData() {
-    const int rows = 50;
-    const int columns = 50;
+    const int rows = 120;
+    const int columns = 120;
 
     if (m_dataCache.size() >= CACHE_SIZE)
         return;
@@ -57,16 +57,46 @@ void WaveDataWorker::generateData() {
     QSurfaceDataArray *dataArray = new QSurfaceDataArray();
     dataArray->reserve(rows);
 
-    const float waveAmplitude = 3.0; // Height of the wave
-    const float waveFrequency = 0.5; // Controls the number of waves
-    const float wavePhase = m_wavePhase; // Animates the wave over time
+    const float baseAmplitude = 3.5f;   // Base height of the wave
+    const float waveFrequency = 0.1f; // Frequency for the waves
+    const float waveSpeed = 2.0f;      // Speed of the waves
+    const float wavePhase = m_wavePhase; // Current wave phase
 
-    for (int i=0; i<rows; ++i) {
+    const float centerX = columns / 2.0f;       // Center of the grid in the X-axis
+    const float maxDistance = columns / 2.0f;   // Maximum distance from the center on the X-axis
+
+    const int shoreThreshold = rows / 2; // Extend the shoreline damping region to half the grid
+
+    for (int i = 0; i < rows; ++i) {
         QSurfaceDataRow row(columns);
-        for (int j=0; j<columns; ++j) {
-            float x = i;
-            float z = j;
-            float y = waveAmplitude * std::sin(waveFrequency * x + waveFrequency * z + wavePhase);
+
+        // Compute Z-based shoreline damping factor (now extending to z < rows / 2)
+        float zDamping = (i < shoreThreshold)
+                             ? 1.0f - (static_cast<float>(shoreThreshold - i) / shoreThreshold) // Gradual damping near z = 0
+                             : 1.0f; // No damping for z > rows / 2
+
+        for (int j = 0; j < columns; ++j) {
+            float z = static_cast<float>(i); // Map rows to Z-axis
+            float x = static_cast<float>(j); // Map columns to X-axis
+
+            // Apply X-based damping
+            float xDistance = std::abs(x - centerX);
+            float xDamping = 1.0f - (xDistance / maxDistance);
+            xDamping = std::max(0.2f, xDamping); // Ensure minimum damping
+
+            // Combine Z-damping and X-damping
+            float combinedDamping = zDamping * xDamping;
+
+            // Calculate wave height
+            float wave1 = baseAmplitude * combinedDamping * std::sin(waveFrequency * z + wavePhase * waveSpeed);
+            float wave2 = baseAmplitude * combinedDamping * 0.6f * std::sin(waveFrequency * x - wavePhase * waveSpeed);
+
+            // Combine the waves
+            float y = wave1 + wave2;
+
+            // Ensure Y-axis range [-10, 10]
+            y = qBound(-10.0f, y, 10.0f);
+
             row[j].setPosition(QVector3D(x, y, z));
         }
         dataArray->append(row);
@@ -74,8 +104,6 @@ void WaveDataWorker::generateData() {
 
     m_dataCache.enqueue(dataArray);
 
-    m_wavePhase += 0.1f;
-    if (m_wavePhase > 2 * M_PI) {
-        m_wavePhase -= 2 * M_PI; // Keep the phase within a 0-2π range
-    }
+    // Update phase for animation
+    m_wavePhase += 0.03f; // Increment phase for wave motion
 }
