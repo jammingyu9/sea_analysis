@@ -17,13 +17,15 @@ public:
     WaveDataProvider();
 
     Q_INVOKABLE void update();
-    Q_INVOKABLE QSurfaceDataProxy* dataProxy();
+    Q_INVOKABLE QSurfaceDataProxy* waveProxy();
+    Q_INVOKABLE QSurfaceDataProxy* warnProxy();
 
 private:
     void generateData();
 
 private:
-    std::shared_ptr<QSurfaceDataProxy> m_dataProxy;
+    std::shared_ptr<QSurfaceDataProxy> m_waveProxy;
+    std::shared_ptr<QSurfaceDataProxy> m_warnProxy;
 
     WaveDataWorker worker;
     QThread m_workerThread;

@@ -5,6 +5,8 @@ import QtQuick3D.Helpers
 
 Item {
     property alias surfaceSeriesId : surfaceSeriesId
+    property alias surfaceWarningSeriesId : surfaceWarningSeriesId
+    property alias seaSurfaceGraph : seaSurfaceGraph
 
     anchors.fill: parent
 
@@ -16,9 +18,11 @@ Item {
         theme : GraphsTheme {
             id: surfaceTheme
             colorScheme: Qt.Dark
-            plotAreaBackgroundVisible: false
-            labelsVisible: false
+            plotAreaBackgroundVisible: true
+            labelsVisible: true
             gridVisible: false
+            singleHighlightColor: "red"
+            multiHighlightColor: "blue"
             //! [scatter theme]
         }
 
@@ -55,12 +59,17 @@ Item {
 
         Surface3DSeries {
             id: surfaceSeriesId
-            itemLabelFormat: "@xLabel, @zLabel: @yLabel"
+            itemLabelFormat: "Wave Height: (@xLabel, @zLabel) @yLabel Meters"
 
-            //flatShadingEnabled: false
             drawMode: Surface3DSeries.DrawSurface
-            textureFile: "/Users/jammingyu/Workspace/sea_analysis/image/ocean_texture.jpg"
+            textureFile: "/home/nicolas/Workspace/sea_analysis/image/ocean_texture.jpg"
+        }
 
+        Surface3DSeries {
+            id: surfaceWarningSeriesId
+
+            drawMode: Surface3DSeries.DrawSurfaceAndWireframe
+            wireframeColor: "yellow"
 
         }
     }
