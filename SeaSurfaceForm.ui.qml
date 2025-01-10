@@ -1,7 +1,7 @@
 import QtQuick
 import QtGraphs
 import QtQuick3D.Helpers
-
+import QtQuick3D
 
 Item {
     property alias surfaceSeriesId : surfaceSeriesId
@@ -28,6 +28,7 @@ Item {
 
         environment: ExtendedSceneEnvironment {
             backgroundMode: ExtendedSceneEnvironment.Color
+            clearColor: "black"
             tonemapMode: ExtendedSceneEnvironment.TonemapModeNone
             glowEnabled: true
             //! [scene environment]
@@ -68,9 +69,11 @@ Item {
         Surface3DSeries {
             id: surfaceWarningSeriesId
 
-            drawMode: Surface3DSeries.DrawSurfaceAndWireframe
-            wireframeColor: "yellow"
+            drawMode: Surface3DSeries.DrawWireframe
+            wireframeColor: "aquamarine"
 
         }
     }
 }
+
+
