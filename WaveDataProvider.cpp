@@ -1,9 +1,9 @@
 #include "WaveDataProvider.h"
 #include <QSurface3DSeries>
+#include <QCustom3DItem>
 
 WaveDataProvider::WaveDataProvider()
-    : m_waveProxy(std::make_shared<QSurfaceDataProxy>()),
-      m_warnProxy(std::make_shared<QSurfaceDataProxy>())
+    : m_waveProxy(std::make_shared<QSurfaceDataProxy>())
 {
     qDebug() << "Constructor of WaveDataProvider";
     worker.startDataGeneration();
@@ -16,28 +16,8 @@ void WaveDataProvider::update()
         if (surfaceData) {
             m_waveProxy->resetArray(*surfaceData); // Pass the data as needed
 
-            // Prepare warning data
-            auto warningData = std::make_unique<QSurfaceDataArray>();
-            warningData->reserve(surfaceData->size());
-
-            const float targetHeight = 3.0f; // Height to highlight
-            const float threshold = 0.5f;   // Allowable range for intersection
-
-            for (int rowIndex = 0; rowIndex < surfaceData->size(); ++rowIndex) {
-                const QSurfaceDataRow row = surfaceData->at(rowIndex);
-                QSurfaceDataRow warningRow(row.size());
-                for (int col = 0; col < row.size(); ++col) {
-                    QVector3D position = row.at(col).position();
-                    if (position.y() > targetHeight) {
-                        warningRow[col].setPosition(QVector3D(position.x(), position.y(), position.z())); // Keep point
-                    } else {
-                        warningRow[col].setPosition(QVector3D(position.x(), -15, position.z()));
-                    }
-                }
-                warningData->append(warningRow);
-            }
-
-            m_warnProxy->resetArray(*warningData); // Update warning proxy
+            QVector3D peak = findHighestPeak(*surfaceData);
+            setHighestPeak(peak);
         }
     }
 }
@@ -47,7 +27,30 @@ QSurfaceDataProxy* WaveDataProvider::waveProxy()
     return m_waveProxy.get();
 }
 
-QSurfaceDataProxy* WaveDataProvider::warnProxy()
+QVector3D WaveDataProvider::findHighestPeak(const QSurfaceDataArray &surfaceData)
 {
-    return m_warnProxy.get();
+    QVector3D highestPoint;
+    float maxHeight = -std::numeric_limits<float>::infinity();
+
+    for (int rowIndex = 0; rowIndex < surfaceData.size(); ++rowIndex) {
+        const QSurfaceDataRow &row = surfaceData.at(rowIndex);
+        for (int colIndex = 0; colIndex < row.size(); ++colIndex) {
+            float height = row.at(colIndex).y(); // Access the y-coordinate (height).
+
+            if (height > maxHeight) {
+                maxHeight = height;
+                highestPoint = QVector3D(colIndex, height - 0.3, rowIndex);
+            }
+        }
+    }
+    return highestPoint;
+}
+
+void WaveDataProvider::setHighestPeak(const QVector3D &peak)
+{
+    if (m_highestPeakPos != peak) {
+        m_highestPeakPos = peak;
+        m_highestPeakLabelPos = QVector3D(peak.x(), peak.y() + 2, peak.z());
+        emit highestPeakChanged();
+    }
 }

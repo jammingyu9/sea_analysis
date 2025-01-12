@@ -4,7 +4,7 @@ project(sea_analysis VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Graphs)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Gui Graphs)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -22,7 +22,6 @@ qt_add_qml_module(appsea_analysis
         QML_FILES SeaSurfaceForm.ui.qml
     QML_FILES SeaSurface.qml
     SOURCES WaveDataWorker.h WaveDataWorker.cpp
-    RESOURCES image/ocean_texture.jpg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -37,7 +36,7 @@ set_target_properties(appsea_analysis PROPERTIES
 )
 
 target_link_libraries(appsea_analysis
-    PRIVATE Qt6::Quick Qt6::Graphs
+    PRIVATE Qt6::Quick Qt6::Gui Qt6::Graphs
 )
 
 include(GNUInstallDirs)

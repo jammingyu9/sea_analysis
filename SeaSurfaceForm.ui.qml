@@ -5,8 +5,9 @@ import QtQuick3D
 
 Item {
     property alias surfaceSeriesId : surfaceSeriesId
-    property alias surfaceWarningSeriesId : surfaceWarningSeriesId
     property alias seaSurfaceGraph : seaSurfaceGraph
+    property alias markerId : markerId
+    property alias labelId : labelId
 
     anchors.fill: parent
 
@@ -18,28 +19,23 @@ Item {
         theme : GraphsTheme {
             id: surfaceTheme
             colorScheme: Qt.Dark
-            plotAreaBackgroundVisible: true
-            labelsVisible: true
+            plotAreaBackgroundVisible: false
+            labelsVisible: false
             gridVisible: false
-            singleHighlightColor: "red"
-            multiHighlightColor: "blue"
-            //! [scatter theme]
         }
 
         environment: ExtendedSceneEnvironment {
             backgroundMode: ExtendedSceneEnvironment.Color
-            clearColor: "black"
             tonemapMode: ExtendedSceneEnvironment.TonemapModeNone
             glowEnabled: true
-            //! [scene environment]
             glowStrength: 0.8
             glowIntensity: 8
-            glowBloom: 1
+            glowBloom: 0.8
             glowUseBicubicUpscale: true
             glowLevel: ExtendedSceneEnvironment.GlowLevel.One
                        | ExtendedSceneEnvironment.GlowLevel.Two
                        | ExtendedSceneEnvironment.GlowLevel.Three
-                       //| ExtendedSceneEnvironment.GlowLevel.Four
+                       | ExtendedSceneEnvironment.GlowLevel.Four
         }
 
 
@@ -49,8 +45,8 @@ Item {
         }
 
         axisY: Value3DAxis {
-            max: 10
-            min: -10
+            max: 13
+            min: -5
         }
 
         axisZ: Value3DAxis {
@@ -63,16 +59,26 @@ Item {
             itemLabelFormat: "Wave Height: (@xLabel, @zLabel) @yLabel Meters"
 
             drawMode: Surface3DSeries.DrawSurface
-            textureFile: "/home/nicolas/Workspace/sea_analysis/image/ocean_texture.jpg"
+            textureFile: "/Users/jammingyu/Workspace/sea_analysis/image/ocean_texture.jpg"
         }
 
-        Surface3DSeries {
-            id: surfaceWarningSeriesId
-
-            drawMode: Surface3DSeries.DrawWireframe
-            wireframeColor: "aquamarine"
-
-        }
+        customItemList: [
+            Custom3DItem {
+                id: markerId
+                meshFile: "/Users/jammingyu/Workspace/sea_analysis/mesh/buoy.obj"
+                textureFile: "/Users/jammingyu/Workspace/sea_analysis/mesh/coral.jpg"
+                scaling: Qt.vector3d(0.15, 0.15, 0.15)
+                visible: false // Start hidden
+            },
+            Custom3DLabel {
+                id: labelId
+                backgroundColor: "black"
+                textColor: "orange"
+                font.bold: true
+                visible: false
+                scaling: Qt.vector3d(1.5, 1.5, 1.5)
+            }
+        ]
     }
 }
 
